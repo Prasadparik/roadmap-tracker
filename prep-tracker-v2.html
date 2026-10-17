@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>15-Day Prep Tracker</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#eef4ff;--card:#fff;--tx:#0f1f3d;--mu:#5b6b8c;--bd:#d6e2f7;--ac:#1d4ed8;--ac2:#3b82f6;--soft:#e3edff;color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:22px 16px 56px}
+header div,main{max-width:820px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+header p{margin:0;opacity:.9}
+main{padding:0 16px 48px;margin-top:-40px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(29,78,216,.08)}
+.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .25s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}
+.stat b{display:block;font-size:20px;color:var(--ac)}.stat span{color:var(--mu);font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=date],input[type=number],input[type=time],textarea{background:#fff;color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font:inherit}
+textarea{width:100%;min-height:56px;margin-top:8px;resize:vertical}
+button{background:#fff;color:var(--ac);border:1px solid var(--ac2);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px}
+details.today{border-color:var(--ac);box-shadow:0 0 0 2px var(--soft)}
+summary{cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;list-style:none}
+summary::-webkit-details-marker{display:none}
+.pill{font-size:12px;color:var(--ac);background:var(--soft);border-radius:99px;padding:1px 9px;margin-left:auto;white-space:nowrap}
+.dn{font-weight:700;color:var(--ac);white-space:nowrap}
+.done summary .pill{background:var(--ac);color:#fff}
+.body{padding:0 16px 14px}
+.blk{border-top:1px solid var(--bd);padding:8px 0}
+label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+input[type=checkbox]{margin-top:4px;width:17px;height:17px;accent-color:var(--ac);flex:none}
+.bh{font-weight:600}
+.bh small{color:var(--mu);font-weight:400;margin-left:6px}
+.subs{margin:2px 0 0 27px}
+.subs label{padding:2px 0;font-size:14px;color:var(--mu)}
+label.on>span{text-decoration:line-through;opacity:.6}
+.tag{font-size:11px;background:var(--ac);color:#fff;border-radius:99px;padding:1px 8px}
+.chip{font-size:12px;border-radius:99px;padding:2px 10px;background:var(--soft);color:var(--ac)}
+.chip.warn{background:#fff3d6;color:#8a5a00}
+.tag.miss{background:#f59e0b}
+.small{color:var(--mu);font-size:13px;margin:8px 0 0}
+#focus p{margin:8px 0}
+#tm{font-size:22px;color:var(--ac);font-variant-numeric:tabular-nums}
+.mini{height:6px;margin-top:4px}
+.mode{cursor:pointer;border:1px solid var(--bd);background:#fff;color:var(--ac)}
+.mode.on{background:var(--ac);color:#fff}
+.slot{display:flex;gap:12px;padding:6px 8px;border-radius:8px}
+.slot time{width:150px;flex:none;font-variant-numeric:tabular-nums}
+.slot.now{background:var(--soft);font-weight:600}
+.slot.brk{color:var(--mu)}
+</style>
+</head>
+<body>
+<header><div><h1>15-Day Prep Tracker</h1><p>Backend, frontend, DSA, drills and applications, topic by topic.</p></div></header>
+<main>
+  <div class="card">
+    <div class="row"><b id="pct">0%</b><div class="bar" style="flex:1;min-width:120px"><i id="fill" style="width:0"></i></div></div>
+    <div class="stats" id="stats"></div>
+    <div class="row" style="margin-top:12px"><label style="align-items:center">Start date&nbsp;<input type="date" id="start"></label></div>
+  </div>
+  <div class="card" id="focus"></div>
+  <div class="card" id="pomo"></div>
+  <div class="card" id="tt"></div>
+  <div id="days"></div>
+</main>
+<script>
+var D=[
+["Foundations and job-search setup",[["Backend","Scope and hoisting|Closures|this|Prototypes and classes|Destructuring, spread/rest|ESM vs CommonJS|TypeScript basic types|Interfaces vs types|Generics intro|Express + TS setup, folder structure|Mongoose connection and env config"],["Frontend","React recap: JSX, props|State, lists and keys|Controlled forms|Create the React/Next app"],["DSA","Two Sum|Contains Duplicate"],["Drill","Closures|var/let/const, hoisting|== vs ===|How this is decided"],["Applications","Rewrite resume|Update LinkedIn and Naukri (Immediate joiner)|Send first 10 applications"]]],
+["Async JavaScript and authentication",[["Backend","Promises|async/await|Event loop (stack, microtasks, macrotasks)|Promise.all/allSettled/race|Async error handling|User model and bcrypt|JWT access tokens|Register/login routes|Zod validation"],["Frontend","useState|useEffect (deps, cleanup)|useRef|Login/register forms|API calls (fetch/axios)"],["DSA","Valid Anagram|Group Anagrams"],["Drill","Event-loop output snippets|Promise chaining|async/await error handling|Why await in a loop is slow"],["Applications","Set job alerts (LinkedIn, Naukri, Instahyre, Cutshort, Wellfound)|Apply to 10-15 roles"]]],
+["Express middleware and roles",[["Backend","Middleware order and next()|Auth middleware|Role-based access|Error middleware + custom error class|Validation middleware|CORS|Access vs refresh tokens"],["Frontend","Routing|Protected routes|Auth context (useContext)|A custom hook"],["DSA","Valid Palindrome|Longest Common Prefix"],["Drill","How middleware works|Error middleware signature|JWT vs sessions|Where to store tokens|Why bcrypt"],["Applications","Referral messages to ex-colleagues|10 applications"]]],
+["Services, slots and booking logic",[["Backend","Service and Slot models|CRUD with pagination, filter, sort|Conflict-free booking (unique index/atomic update)|HTTP status codes|Status transitions"],["Frontend","Services list|Slot picker|Booking form|Loading and error states|React Query|useReducer"],["DSA","Best Time to Buy and Sell Stock|Longest Substring Without Repeating Characters"],["Drill","REST conventions|PUT vs PATCH|Idempotency|Offset vs cursor pagination|Preventing double-booking"],["Applications","10-15 applications|Recruiter messages"]]],
+["MongoDB depth",[["Backend","Indexes (single, compound, unique, text)|explain()|Schema design patterns|Mongoose validation and hooks|populate vs $lookup|Transactions"],["Frontend","Form validation|Re-render causes|memo, useMemo, useCallback"],["DSA","Maximum Subarray|Product of Array Except Self"],["Drill","Embedding vs referencing|Index trade-offs|Finding a slow query|Replication and sharding basics|N+1 with populate"],["Applications","10-15 applications|Follow-ups"]]],
+["Aggregation and Next.js",[["Backend","$match, $group, $project, $sort|$lookup, $unwind, $facet|Admin stats endpoint"],["Frontend","App Router, layouts, dynamic routes|loading/error files|SSR vs SSG vs ISR vs CSR|Server vs client components|Admin dashboard page"],["DSA","Valid Parentheses|Daily Temperatures"],["Drill","Aggregation pipelines on paper|SSR vs SSG vs ISR|Server vs client components|Hydration"],["Applications","10-15 applications"]]],
+["Node internals and testing",[["Backend","Event loop phases|nextTick vs setImmediate vs microtasks|Streams and backpressure|Buffers|Worker threads vs cluster vs child processes|EventEmitter|Jest + Supertest tests"],["Frontend","Next.js data fetching and caching|Server actions|Route handlers|Env variables"],["DSA","Binary Search|Search in Rotated Sorted Array"],["Drill","Single-threaded but scalable|Blocking vs non-blocking|Worker threads vs cluster"],["Applications","10-15 applications|Follow-up pass"]]],
+["Security and production habits",[["Backend","Helmet|Rate limiting|NoSQL injection and sanitization|XSS and CSRF|Logging (Pino/Winston)|Swagger docs"],["Frontend","Error boundaries|Accessibility basics|Responsive polish|Token storage (cookies vs localStorage)|Auth.js overview"],["DSA","Reverse Linked List|Merge Two Sorted Lists"],["Drill","XSS vs CSRF|JWT storage trade-offs|Rate-limiting an API|Why CORS exists"],["Applications","10-15 applications"]]],
+["Docker and deployment",[["Backend","Images vs containers, layers, volumes|Multi-stage Dockerfile + .dockerignore|Docker Compose with MongoDB|Push to Docker Hub|Deploy backend (Render/Railway/EC2)"],["Frontend","Deploy the app (Vercel)|Connect it to the backend"],["DSA","Linked List Cycle|LRU Cache idea"],["Drill","Image vs container|CMD vs ENTRYPOINT|Volumes and Compose|Why multi-stage, shrinking images"],["Applications","10-15 applications"]]],
+["AWS basics and CI",[["Backend","EC2 launch and SSH|Security groups|IAM users, roles, policies|S3 upload|RDS (concept), CloudWatch, billing alerts|Run the container on EC2|GitHub Actions (lint, test, build)"],["Frontend","Finish UI gaps|Loading skeletons|README screenshots"],["DSA","Max Depth of Binary Tree|Invert Binary Tree|Level-order BFS"],["Drill","EC2 vs Lambda|IAM role vs user|S3 use cases|Explain your deployment|Explain CI/CD"],["Applications","Add live project link to resume/GitHub|10-15 applications"]]],
+["System design basics",[["Backend","Approach: requirements, API, data model, scaling|Load balancer, Redis, CDN, queues|SQL vs NoSQL|Scaling, CAP, idempotency, eventual consistency|Monolith vs microservices|Design: booking system|Design: URL shortener|Design: notification service|Design: rate limiter"],["Frontend","Context vs Redux Toolkit vs Zustand|React Query|Code splitting"],["DSA","Subsets|Climbing Stairs"],["Drill","Design each system out loud (15 min each)"],["Applications","10-15 applications"]]],
+["Mock interview 1 and TypeScript",[["Mock","1 hr technical mock (JS, Node, MongoDB, React)|Write down every question you stumbled on"],["Backend","Generics and utility types|Narrowing and unions|unknown vs any|Enums vs union types"],["Frontend","Reconciliation and virtual DOM|Keys|Controlled vs uncontrolled inputs|useEffect pitfalls|Suspense basics"],["DSA","Number of Islands|Clone Graph"],["Applications","10-15 applications"]]],
+["Behavioral, walkthrough and TPM track",[["STAR stories","Leading 20-30 people|Zoho CRM to InstaConnectCRM|InstaMonitor / InstaBooking / InstaSocial|A conflict|A missed deadline|A trade-off"],["Your story","Why TPM, and why back to hands-on|Why are you leaving|What did you build yourself"],["Walkthrough","Explain your booking system (10 min)"],["TPM track","Agile, Scrum, Kanban|Estimation|Risk management|Stakeholder management|Release management|Delivery metrics|REST, webhooks, SLAs"],["Mock and DSA","Mock 2 (behavioral and project), recorded|2 mixed DSA problems (30 min)|Include TPM roles in applications"]]],
+["Revision and company prep",[["Cheat sheets","JS|Node|MongoDB|React/Next|Docker/AWS"],["Weak list","Revisit the couldn't-answer list from mocks"],["Company prep","Read each JD and list technologies|Prepare 3 questions to ask each company"],["Timed build","Authenticated API from scratch in 90 min"],["Drill, DSA, apps","50 rapid-fire questions|3 timed DSA problems|Follow up on all applications"]]],
+["Final mock and buffer",[["Mock 3","Full interview, technical plus behavioral"],["Revision","Light revision of weak spots (no new topics)"],["Logistics","Laptop, internet, IDE|Resume copies and notebook|Questions for interviewers"],["Applications","10-15 more applications|Rest early"]]]
+];
+D.forEach(function(d){d[1].forEach(function(b){b[1]=b[1].split("|")})});
+var K="prep15v2",S={start:"",done:{},notes:{},apps:{}},open={};
+try{var r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r));else{var o=localStorage.getItem("prep15v1");if(o){o=JSON.parse(o);S.start=o.start||"";S.notes=o.notes||{};S.apps=o.apps||{};for(var k in o.done){var p=k.split("-");D[p[0]][1][p[1]][1].forEach(function(_,m){S.done[k+"-"+m]=1})}}}}catch(e){}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function cur(){if(!S.start)return 0;var d=Math.floor((new Date(new Date().toDateString())-new Date(S.start+"T00:00:00"))/864e5)+1;return d<1?0:Math.min(d,15)}
+function dayCnt(i){var n=0,t=0;D[i][1].forEach(function(b,j){b[1].forEach(function(_,m){t++;if(S.done[i+"-"+j+"-"+m])n++})});return[n,t]}
+function blkCnt(i,j){var n=0;D[i][1][j][1].forEach(function(_,m){if(S.done[i+"-"+j+"-"+m])n++});return n}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function render(){
+  var tot=0,all=0,full=0,apps=0,c=cur();
+  D.forEach(function(d,i){var x=dayCnt(i);tot+=x[0];all+=x[1];if(x[0]===x[1])full++;apps+=+S.apps[i]||0});
+  var p=Math.round(tot/all*100);
+  document.getElementById("pct").textContent=p+"%";
+  document.getElementById("fill").style.width=p+"%";
+  document.getElementById("stats").innerHTML=
+    '<div class="stat"><b>'+tot+'/'+all+'</b><span>topics done</span></div>'+
+    '<div class="stat"><b>'+full+'/15</b><span>days complete</span></div>'+
+    '<div class="stat"><b>'+apps+'</b><span>applications sent</span></div>'+
+    '<div class="stat"><b>'+(c?"Day "+c:"-")+'</b><span>today</span></div>';
+  var fo=document.getElementById("focus"),rules='<p class="small">Rules: build before reading. Say answers out loud. Never skip the drill. Take any interview call that comes.</p>';
+  if(!c){fo.innerHTML='<b>'+(S.start?'Plan starts on '+esc(S.start):'Set your start date above to begin the plan')+'</b>'+rules}
+  else{
+    var behind=0,sk=0,nx=null,ii,jj,mm,y,z;
+    for(ii=0;ii<c-1;ii++){y=dayCnt(ii);behind+=y[1]-y[0]}
+    for(ii=c-1;ii>=0;ii--){z=dayCnt(ii);if(z[0]===z[1])sk++;else if(ii!==c-1)break}
+    outer:for(ii=0;ii<15;ii++)for(jj=0;jj<D[ii][1].length;jj++)for(mm=0;mm<D[ii][1][jj][1].length;mm++)if(!S.done[ii+"-"+jj+"-"+mm]){nx=[ii,jj,mm];break outer}
+    var td=dayCnt(c-1),ap=+S.apps[c-1]||0,se=(S.focus||{})[new Date().toDateString()]||0,lf=T.iv?Math.max(0,Math.round((T.end-Date.now())/1000)):3000,f='';
+    f+='<div class="row"><b>Day '+c+' focus</b><span class="chip'+(behind?' warn':'')+'">'+(behind?behind+' topics behind':'On track')+'</span><span class="chip">Streak: '+sk+(sk===1?' day':' days')+'</span></div>';
+    if(nx&&nx[0]<=c-1){var nd=D[nx[0]],cu=nx[0]<c-1;f+='<p>'+(cu?'Catch up first. Next topic is from Day '+(nx[0]+1)+':':'Next up:')+' <b>'+esc(nd[1][nx[1]][0])+' / '+esc(nd[1][nx[1]][1][nx[2]])+'</b> <button data-t="next" data-k="'+nx.join("-")+'">Mark done</button></p>'}
+    else f+='<p><b>Today\u2019s plan is complete.</b> Review your notes, follow up on applications, and rest.</p>';
+    f+='<div class="small">Today: '+td[0]+'/'+td[1]+' topics</div><div class="bar mini"><i style="width:'+Math.round(td[0]/td[1]*100)+'%"></i></div>';
+    f+='<div class="small">Applications today: '+ap+'/10</div><div class="bar mini"><i style="width:'+Math.min(100,ap*10)+'%"></i></div>';
+    f+=rules;
+    fo.innerHTML=f}
+  renderPomo();renderTT();
+  document.getElementById("start").value=S.start;
+  var h="";
+  D.forEach(function(d,i){
+    var x=dayCnt(i),isT=c===i+1;
+    h+='<details data-i="'+i+'" class="'+(isT?"today ":"")+(x[0]===x[1]?"done":"")+'"'+(open[i]||(isT&&open[i]===undefined)?" open":"")+'><summary><span class="dn">Day '+(i+1)+'</span><span>'+esc(d[0])+'</span>'+(isT?'<span class="tag">today</span>':(c&&i+1<c&&x[0]<x[1]?'<span class="tag miss">missed</span>':''))+'<span class="pill">'+x[0]+'/'+x[1]+'</span></summary><div class="body">';
+    d[1].forEach(function(b,j){
+      var n=blkCnt(i,j),t=b[1].length;
+      h+='<div class="blk"><label class="bh'+(n===t?" on":"")+'"><input type="checkbox" data-b="'+i+'-'+j+'"'+(n===t?" checked":"")+'><span>'+esc(b[0])+'<small>'+n+'/'+t+'</small></span></label><div class="subs">';
+      b[1].forEach(function(s,m){
+        var k=i+"-"+j+"-"+m,on=S.done[k];
+        h+='<label class="'+(on?"on":"")+'"><input type="checkbox" data-k="'+k+'"'+(on?" checked":"")+'><span>'+esc(s)+'</span></label>';
+      });
+      h+='</div></div>';
+    });
+    h+='<div class="row" style="border-top:1px solid var(--bd);padding-top:8px"><label style="align-items:center">Applications sent today&nbsp;<input type="number" min="0" style="width:70px" data-a="'+i+'" value="'+(S.apps[i]||"")+'"></label></div>';
+    h+='<textarea placeholder="Notes: what you stumbled on, what to revisit" data-n="'+i+'">'+esc(S.notes[i]||"")+'</textarea></div></details>';
+  });
+  document.getElementById("days").innerHTML=h;
+}
+var box=document.getElementById("days");
+box.addEventListener("toggle",function(e){var i=e.target.getAttribute&&e.target.getAttribute("data-i");if(i!==null&&i!==undefined)open[i]=e.target.open},true);
+box.addEventListener("change",function(e){
+  var t=e.target;
+  if(t.dataset.k){if(t.checked)S.done[t.dataset.k]=1;else delete S.done[t.dataset.k];save();render()}
+  else if(t.dataset.b){var q=t.dataset.b.split("-");D[q[0]][1][q[1]][1].forEach(function(_,m){var k=t.dataset.b+"-"+m;if(t.checked)S.done[k]=1;else delete S.done[k]});save();render()}
+  else if(t.dataset.a){S.apps[t.dataset.a]=t.value;save();render()}
+});
+box.addEventListener("input",function(e){if(e.target.dataset.n){S.notes[e.target.dataset.n]=e.target.value;save()}});
+document.getElementById("start").addEventListener("change",function(e){S.start=e.target.value;save();render()});
+var T={end:0,iv:null,mode:"focus",left:0};
+function pd(){var p=S.pom||{};return{focus:+p.focus||25,short:+p.short||5,long:+p.long||15}}
+function remain(){return T.iv?Math.max(0,Math.round((T.end-Date.now())/1000)):(T.left||pd()[T.mode]*60)}
+function beep(){var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=660;o.start();setTimeout(function(){o.stop()},600)}
+function fmt(s){return Math.floor(s/60)+":"+("0"+s%60).slice(-2)}
+function tick(){var l=remain(),e=document.getElementById("tm");if(e)e.textContent=fmt(l);document.title=T.iv?fmt(l)+" - "+(T.mode==="focus"?"Focus":"Break"):"15-Day Prep Tracker";if(l<=0&&T.iv){clearInterval(T.iv);T.iv=null;T.left=0;try{beep()}catch(x){}if(T.mode==="focus"){var k=new Date().toDateString();S.focus=S.focus||{};S.focus[k]=(S.focus[k]||0)+1;save();T.mode=S.focus[k]%4===0?"long":"short"}else T.mode="focus";render()}}
+document.getElementById("focus").addEventListener("click",function(e){var t=e.target.dataset.t;if(!t)return;
+  if(t==="next"){S.done[e.target.dataset.k]=1;save()}
+  render()});
+function renderPomo(){
+  var p=pd(),ses=(S.focus||{})[new Date().toDateString()]||0,h='<div class="row"><b>Pomodoro</b>';
+  [["focus","Focus"],["short","Short break"],["long","Long break"]].forEach(function(m){h+='<button class="chip mode'+(T.mode===m[0]?' on':'')+'" data-t="mode" data-m="'+m[0]+'">'+m[1]+'</button>'});
+  h+='</div><div class="row" style="margin-top:10px"><b id="tm">'+fmt(remain())+'</b><button data-t="'+(T.iv?'pause':'start')+'">'+(T.iv?'Pause':'Start')+'</button><button data-t="reset">Reset</button><span class="small" style="margin:0">Today: '+ses+' sessions, '+Math.round(ses*p.focus)+' min focused</span></div>';
+  h+='<div class="row small">Minutes:&nbsp;<label style="align-items:center">Focus&nbsp;<input type="number" min="1" max="120" style="width:60px" data-p="focus" value="'+p.focus+'"></label><label style="align-items:center">Short&nbsp;<input type="number" min="1" max="60" style="width:60px" data-p="short" value="'+p.short+'"></label><label style="align-items:center">Long&nbsp;<input type="number" min="1" max="60" style="width:60px" data-p="long" value="'+p.long+'"></label></div><div class="small">A long break comes after every 4 focus sessions. Keep this tab open while the timer runs.</div>';
+  document.getElementById("pomo").innerHTML=h}
+document.getElementById("pomo").addEventListener("click",function(e){var t=e.target.dataset.t;if(!t)return;
+  if(t==="start"){if(!T.iv){T.end=Date.now()+remain()*1000;T.iv=setInterval(tick,1000)}}
+  else if(t==="pause"){T.left=remain();clearInterval(T.iv);T.iv=null}
+  else if(t==="reset"){clearInterval(T.iv);T.iv=null;T.left=0}
+  else if(t==="mode"){clearInterval(T.iv);T.iv=null;T.mode=e.target.dataset.m;T.left=0}
+  tick();render()});
+document.getElementById("pomo").addEventListener("change",function(e){var k=e.target.dataset.p;if(!k)return;S.pom=S.pom||{};S.pom[k]=Math.max(1,+e.target.value||1);save();T.left=0;render()});
+function t12(n){var h=Math.floor(n/60)%24,m=n%60,ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+("0"+m).slice(-2)+" "+ap}
+function renderTT(){
+  var c=cur(),di=c?c-1:0,st=S.tstart||"10:30",pr=st.split(":"),t=+pr[0]*60+ +pr[1],nw=new Date(),nm=nw.getHours()*60+nw.getMinutes(),du=[120,90,45,60,45],rows=[],bl=D[di][1],hrs=0;
+  bl.forEach(function(b,j){if(j===1)rows.push(["Lunch break",45,0]);if(j===3)rows.push(["Short break",15,0]);rows.push([b[0],du[j]||60,1,j])});
+  var h='<div class="row"><b>Daily timetable - '+(c?'Day '+c:'Day 1 template')+'</b><label style="align-items:center;margin-left:auto">Start&nbsp;<input type="time" id="tstart" value="'+st+'"></label></div><div style="margin-top:8px">';
+  rows.forEach(function(r){
+    var a=t,e2=t+r[1],isNow=c&&nm>=a&&nm<e2,dn=r[2]?blkCnt(di,r[3]):0,tot=r[2]?bl[r[3]][1].length:0;
+    if(r[2])hrs+=r[1];
+    h+='<div class="slot'+(isNow?' now':'')+(r[2]?'':' brk')+'"><time>'+t12(a)+' - '+t12(e2)+'</time><span>'+esc(r[0])+(r[2]?' ('+dn+'/'+tot+')'+(dn===tot?' done':''):'')+(isNow?' - now':'')+'</span></div>';
+    t=e2});
+  h+='</div><p class="small">'+hrs/60+' hrs of study, finishing at '+t12(t)+'. Run Pomodoro sessions inside each block.</p>';
+  document.getElementById("tt").innerHTML=h}
+document.getElementById("tt").addEventListener("change",function(e){if(e.target.id==="tstart"&&e.target.value){S.tstart=e.target.value;save();renderTT()}});
+setInterval(function(){if(!document.activeElement||document.activeElement.id!=="tstart")renderTT()},60000);
+render();
+</script>
+</body>
+</html>
